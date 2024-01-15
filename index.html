@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat with Juliet</title>
+    <style>
+        :root {
+            --background-light: #f8f8f8;
+            --background-dark: #222;
+            --text-light: #333;
+            --text-dark: #fff;
+            --select-bg-light: #ddd;
+            --select-bg-dark: #333;
+            --select-color-light: #000;
+            --select-color-dark: #fff;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            text-align: center;
+            margin: 20px;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            background-color: var(--background-light);
+            color: var(--text-light);
+        }
+
+        body.dark-mode {
+            background-color: var(--background-dark);
+            color: var(--text-dark);
+        }
+
+        h1 {
+            color: var(--text-light);
+        }
+
+        #chat-box {
+            max-width: 500px;
+            margin: 20px auto;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: var(--background-light);
+        }
+
+        input[type="text"] {
+            width: 70%;
+            padding: 8px;
+            margin: 5px 0;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #4caf50;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #made-by {
+            margin-top: 20px;
+            font-size: 12px;
+            color: #777;
+        }
+
+        input[type="checkbox"] {
+            display: none;
+        }
+
+        #Bot {
+            background-color: #f8f8f8;
+            border-color: var(--background-dark);
+            color: #333;
+            box-shadow: none;
+            border-style: none;
+        }
+
+        select {
+            appearance: none;
+            background-color: v#fff;
+            color: var(--select-color-light);
+            transition: background-color 0.3s ease, color 0.3s ease;
+            font-size: 33px;
+            cursor: pointer;
+
+        }
+
+
+        body.dark-mode #Bot {
+            background-color: #222;
+            color: #333333;
+        }
+
+        select option {
+            font-size: 14px;
+
+        }
+
+        label {
+            display: inline-block;
+            background-color: var(--select-bg-light);
+            padding: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        input[type="checkbox"]:checked+label {
+            background-color: var(--select-bg-dark);
+            color: var(--select-color-dark);
+        }
+
+        ul {
+            list-style: none;
+        }
+
+
+
+        .popup {
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4);
+            display: none;
+        }
+
+        .popup-content {
+            background-color: white;
+            margin: 10% auto;
+            padding: 20px;
+            border: 1px solid #888888;
+            width: 30%;
+            font-weight: bolder;
+        }
+
+        .popup-content button {
+            display: inline-block;
+            margin: 0 auto;
+        }
+
+        .show {
+            display: block;
+        }
+
+        h1 {
+            color: green;
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <nav>
+        <ul>
+            <li><a href="http://127.0.0.1:5000/">Home</a></li>
+            <li><a href="http://127.0.0.1:5000/irish/">Irish Gaelic</a></li>
+            <li><a href="http://127.0.0.1:5000/latin/">Latin</a></li>
+            <li><a href="http://127.0.0.1:5000/shake/">Shakespearean English</a></li>
+            <li><a href="http://127.0.0.1:5000/oldman/">Old Man</a></li>
+            <li><strong>Chat with Juliet</strong></li>
+        </ul>
+    </nav>
+<button id="settings"></button>
+    <h1>Chat with:
+        <select name="Bot" id="Bot" onchange="botchange()">
+            <option value="Juliet">Juliet</option>
+            <option value="Romeo">Romeo</option>
+            <option value="Steve Jobs">Steve Jobs</option>
+            <option value="AddMore" id="myButton">Add More</option>
+        </select>
+    </h1>
+
+    <div id="chat-box"></div>
+    <input type="checkbox" id="darkModeToggle" onchange="toggleDarkMode()">
+    <label for="darkModeToggle"></label><br>
+    <input type="text" id="user-input" placeholder="You:" onkeydown="handleEnter(event)">
+
+    <button onclick="askServer()" id="enterchat">Ask Juliet</button>
+
+    <div id="myPopup" class="popup">
+        <div class="popup-content">
+            <h1 style="color:green;">
+                Name your Bot:
+            </h1>
+            <input type="text" id="userBotName" placeholder="Name:">
+            <input type="text" id="user-prompt" placeholder="Prompt:">
+            <div>
+                <button id="closePopup"> Close </button>
+                <button id="savePopup" onclick="savedBot()"> Save </button>
+            </div>
+        </div>
+    </div>
+
+
+    <div id="made-by">Made by Alex Holley</div>
+
+    <script>
+
+        function botchange() {
+            textname = document.getElementById("enterchat");
+            botname = document.getElementById("Bot");
+            if (botname.value !== "AddMore") {
+                textname.innerHTML = "Ask " + botname.value;
+            } else {
+                //addmore funtion  
+            }
+        }
+        function savedBot() {
+
+            userBotN = document.getElementById("userBotName");
+            userBotP = document.getElementById("user-prompt");
+            
+           // Save bot-specific information to localStorage
+    localStorage.setItem(userBotN.value + "_UserBotName", userBotN.value);
+    localStorage.setItem(userBotN.value + "_UserBotPrompt", userBotP.value);
+
+    // Update the ask button text
+    updateAskButton();
+
+    // Save the last used bot
+    localStorage.setItem("lastUsedBot", userBotN.value);
+            var newBotOption = document.createElement("option");
+            newBotOption.value = userBotN.value; // Set the value of the option
+            newBotOption.text = userBotN.value;  // Set the text content of the option
+            document.getElementById("Bot").add(newBotOption); // Append the new option
+            document.getElementById("Bot").value = userBotN.value;
+            updateAskButton();
+        }
+        function updateAskButton() {
+        var selectedBot = document.getElementById("Bot").value;
+        var askButton = document.getElementById("enterchat");
+        askButton.innerHTML = "Ask " + selectedBot;
+    }
+        function getcustomBot() {
+
+
+        }
+        myButton.addEventListener("click", function () {
+            myPopup.classList.add("show");
+        });
+        closePopup.addEventListener("click", function () {
+            myPopup.classList.remove("show");
+        });
+        savePopup.addEventListener("click", function () {
+            myPopup.classList.remove("show");
+        });
+        window.addEventListener("click", function (event) {
+            if (event.target == myPopup) {
+                myPopup.classList.remove("show");
+            }
+        });
+
+
+        function askServer() {
+            var selectElement = document.getElementById("Bot");
+            var selectedValue = selectElement.options[selectElement.selectedIndex].value;
+
+            var user_input = document.getElementById('user-input').value;
+            var chatBox = document.getElementById('chat-box');
+            var user_prompt = "your name is: " + localStorage.getItem("UserBotName") +localStorage.getItem("UserBotPrompt");
+            // Display user input
+            chatBox.innerHTML += '<p style="color: #333;">' + selectedValue + ': ' + user_input + '</p>'
+
+            // Send user input to server
+            fetch('/ask_juliet', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: 'user_input=' + user_input + '&user_prompt=' + user_prompt,
+            })
+                .then(response => response.json())
+                .then(data => {
+                    // Clear the text box
+                    document.getElementById('user-input').value = '';
+                    // Display Juliet's response
+                    chatBox.innerHTML += '<p style="color: #333;">' + selectedValue + ': ' + data.response + '</p>';
+                });
+        }
+
+        function handleEnter(event) {
+            if (event.key === 'Enter') {
+                askServer();
+            }
+        }
+
+        // Check the stored dark mode preference on page load
+        document.addEventListener("DOMContentLoaded", function () {
+            if (localStorage.getItem("darkMode") === "enabled") {
+                document.body.classList.add("dark-mode");
+                document.getElementById("darkModeToggle").checked = true;
+            }
+             // Retrieve and populate stored bot data in the select options
+    var selectElement = document.getElementById("Bot");
+    var storedBotNames = Object.keys(localStorage).filter(key => key.endsWith("_UserBotName"));
+
+    storedBotNames.forEach(function (botName) {
+        var userBotName = localStorage.getItem(botName);
+        var userBotPrompt = localStorage.getItem(botName.replace("_UserBotName", "_UserBotPrompt"));
+
+        // Create a new option element
+        var newBotOption = document.createElement("option");
+        newBotOption.value = userBotName;
+        newBotOption.text = userBotName;
+
+        // Append the new option to the select element
+        selectElement.add(newBotOption);
+
+        // Store bot-specific information in localStorage
+        localStorage.setItem(userBotName + "_UserBotName", userBotName);
+        localStorage.setItem(userBotName + "_UserBotPrompt", userBotPrompt);
+    });
+
+    // Set the selected value to the last used bot (if available)
+    var lastUsedBot = localStorage.getItem("lastUsedBot");
+    if (lastUsedBot && storedBotNames.includes(lastUsedBot + "_UserBotName")) {
+        selectElement.value = lastUsedBot;
+    }
+        });
+
+        function toggleDarkMode() {
+            const body = document.body;
+            const darkModeToggle = document.getElementById("darkModeToggle");
+
+            // Toggle the dark-mode class on the body
+            body.classList.toggle("dark-mode");
+
+            // Update the dark mode preference in localStorage
+            if (body.classList.contains("dark-mode")) {
+                localStorage.setItem("darkMode", "enabled");
+                darkModeToggle.checked = true;
+            } else {
+                localStorage.setItem("darkMode", "disabled");
+                darkModeToggle.checked = false;
+            }
+        }
+    </script>
+</body>
+
+</html>
